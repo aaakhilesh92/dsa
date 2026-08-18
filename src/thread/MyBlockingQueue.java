@@ -1,0 +1,36 @@
+package thread;
+
+import java.util.LinkedList;
+import java.util.List;
+
+public class MyBlockingQueue<E> {
+
+    private List<E> queue = new LinkedList<>();
+    private int limit = 10;
+
+    public MyBlockingQueue(int limit) {
+        this.limit = limit;
+    }
+
+    public synchronized void enqueue(E item) throws InterruptedException {
+        while (this.queue.size() == this.limit) {
+            wait();
+        }
+        this.queue.add(item);
+        if (this.queue.size() == 1) {
+            notifyAll();
+        }
+    }
+
+    public synchronized E dequeue() throws InterruptedException {
+        while (this.queue.size() == 0) {
+            wait();
+        }
+        if (this.queue.size() == this.limit) {
+            notifyAll();
+        }
+
+        return this.queue.remove(0);
+    }
+
+}
